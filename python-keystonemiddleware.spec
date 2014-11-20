@@ -1,49 +1,89 @@
-Name:		python-keystonemiddleware
-Version:	XXX
-Release:	1%{?dist}
-Summary:	keystone middleware modules
+# Created by pyp2rpm-1.1.0b
+%global pypi_name keystonemiddleware
 
-License:	ASL 2.0
-URL:		http://pypi.python.org/pypi/%{name}
-Source0:	http://tarballs.openstack.org/%{name}/%{name}-%{version}.tar.gz
+Name:           python-%{pypi_name}
+Version:        XXX
+Release:        XXX{?dist}
+Summary:        Middleware for OpenStack Identity
 
+License:        ASL 2.0
+URL:            http://launchpad.net/keystonemiddleware
+Source0:        https://pypi.python.org/packages/source/k/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+BuildArch:      noarch
 
-BuildArch:	noarch
-BuildRequires:	python2-devel
-BuildRequires:	python-setuptools
-BuildRequires:	python-pbr
+BuildRequires:  python2-devel
+BuildRequires:  python-setuptools
+BuildRequires:  python-pbr
 
-Requires:	python-setuptools
-Requires:	python-argparse
-Requires:	python-anyjson
-Requires:	python-iso8601
-Requires:	python-babel
-Requires:	python-netaddr
-Requires:	python-oslo-config
-Requires:	python-keystoneclient
-Requires:	python-six
-Requires:	python-webob1.2
-Requires:	python-requests
+Requires: python-keystoneclient >= 1:0.10.0
+# for s3 and ec2 token middlewares
+Requires: python-webob
+
 
 %description
-Middleware modules designed to provide authentication and
-authorization features to web services other than `Keystone
+This package contains middleware modules designed to provide authentication
+and authorization features to web services other than OpenStack Keystone.
+The most prominent module is keystonemiddleware.auth_token.
+This package does not expose any CLI or Python API features.
+
+%package doc
+Summary:    Documentation for the Middleware for OpenStack Identity
+Group:      Documentation
+
+BuildRequires:  python-sphinx
+BuildRequires:  python-oslo-sphinx
+
+%description doc
+Documentation for the Middleware for OpenStack Identity
+
 
 %prep
-
-%setup -q -n keystonemiddleware-%{upstream_version}
+%setup -q -n %{pypi_name}-%{upstream_version}
+# Let RPM handle the dependencies
+rm -f requirements.txt
+# Remove bundled egg-info
+rm -rf %{pypi_name}.egg-info
 
 %build
-%{__python} setup.py build
+%{__python2} setup.py build
+
+# generate html docs
+export PYTHONPATH="$( pwd ):$PYTHONPATH"
+sphinx-build doc/source html
+# remove the sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
+
 
 %install
-%{__python} setup.py install -O1 --skip-build --root %{buildroot}
+%{__python2} setup.py install --skip-build --root %{buildroot}
+
+# Delete tests
+rm -r %{buildroot}%{python_sitelib}/%{pypi_name}/tests
+
 
 %files
-%doc README.rst
-%doc LICENSE
-%{python_sitelib}/keystonemiddleware*
+%doc README.rst LICENSE
+%{python2_sitelib}/%{pypi_name}
+%{python2_sitelib}/%{pypi_name}-*.egg-info
+
+%files doc
+%doc html LICENSE
 
 %changelog
-* Fri Aug 01 2014 Derek Higgins <derekh@redhat.com> - XXX
-- Initial package
+* Fri Sep 26 2014 Alan Pevec <alan.pevec@redhat.com> 1.2.0-1
+- Update to upstream 1.2.0
+
+* Wed Aug 27 2014 Alan Pevec <apevec@redhat.com> 1.1.1-1
+- Update to upstream 1.1.1
+
+* Mon Aug 04 2014 Alan Pevec <apevec@redhat.com> - 1.0.0-4
+- move docs to -doc subpackage
+- drop tests from the runtime package
+
+* Wed Jul 30 2014 Alan Pevec <apevec@redhat.com> - 1.0.0-2
+- add build dep on setuptools
+- fix docs build
+- clear requires from egginfo to let RPM handle the dependencies
+
+* Sun Jul 27 2014 Alan Pevec <apevec@redhat.com> - 1.0.0-1
+- Initial package.
