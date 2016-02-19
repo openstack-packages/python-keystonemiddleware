@@ -3,7 +3,7 @@
 
 Name:           python-%{pypi_name}
 Version:        XXX
-Release:        XXX{?dist}
+Release:        XXX
 Summary:        Middleware for OpenStack Identity
 
 License:        ASL 2.0
