@@ -1,9 +1,11 @@
 # Created by pyp2rpm-1.1.0b
 %global pypi_name keystonemiddleware
 
+%{!?upstream_version: %global upstream_version %{version}%{?milestone}}
+
 Name:           python-%{pypi_name}
-Version:        XXX
-Release:        XXX
+Version:        4.3.0
+Release:        1%{?dist}
 Summary:        Middleware for OpenStack Identity
 
 License:        ASL 2.0
@@ -70,6 +72,9 @@ rm -r %{buildroot}%{python_sitelib}/%{pypi_name}/tests
 %doc html LICENSE
 
 %changelog
+* Wed Mar 23 2016 Haikel Guemar <hguemar@fedoraproject.org> 4.3.0-
+- Update to 4.3.0
+
 * Fri Sep 26 2014 Alan Pevec <alan.pevec@redhat.com> 1.2.0-1
 - Update to upstream 1.2.0
 
